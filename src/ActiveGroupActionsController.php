@@ -16,11 +16,21 @@ class ActiveGroupActionsController extends Controller
     public function init()
     {
         parent::init();
+        if (empty($this->groupName)) {
+            throw new InvalidValueException('groupName param is empty,');
+        }
         if ($this->modelClass == null) {
             throw new InvalidValueException('modelClass is empty.');
         }
     }
 
+    /**
+     * Default delete action for active record.
+     *
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
     public function actionDelete()
     {
         $group = $this->getGroup();
@@ -36,7 +46,11 @@ class ActiveGroupActionsController extends Controller
      */
     public function getGroup()
     {
-        return Yii::$app->request->getBodyParam($this->groupName);
+        $group = Yii::$app->request->getBodyParam($this->groupName, []);
+        if (!is_array($group)) {
+            $group = [];
+        }
+        return $group;
     }
 
     /**
