@@ -1,0 +1,26 @@
+{
+  "name": "starcode/yii2-grid-group-actions",
+  "type": "yii2-extension",
+  "description": "Yii2 extension GridView with group actions",
+  "keywords": ["yii2", "grid", "view", "widget", "table"],
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/starcode-krasnodar/yii2-grid-group-actions/issues",
+    "wiki": "https://github.com/starcode-krasnodar/yii2-grid-group-actions/wiki",
+    "source": "https://github.com/starcode-krasnodar/yii2-grid-group-actions"
+  },
+  "authors": [
+    {
+      "name": "Memory Clutter",
+      "email": "memclutter@gmail.com"
+    }
+  ],
+  "require": {
+    "yiisoft/yii2": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "starcode\\yii\\grid\\": "src/"
+    }
+  }
+}
