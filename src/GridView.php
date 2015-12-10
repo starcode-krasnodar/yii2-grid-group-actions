@@ -18,6 +18,11 @@ class GridView extends \yii\grid\GridView
     public $layout = "{summary}\n{actions}\n{items}\n{pager}";
 
     /**
+     * @var array the [[ActionsButtons]] widget options.
+     */
+    public $actionsButtonsOptions = [];
+
+    /**
      * @inheritdoc
      */
     public function renderSection($name)
@@ -35,6 +40,6 @@ class GridView extends \yii\grid\GridView
      */
     public function renderActions()
     {
-
+        return ActionsButtons::widget($this->actionsButtonsOptions);
     }
 }
