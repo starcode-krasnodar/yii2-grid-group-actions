@@ -29,13 +29,13 @@ class GridView extends \yii\grid\GridView
         if (!isset($this->actionsButtonsOptions['formId'])) {
             $this->actionsButtonsOptions['formId'] = 'yii2-grid-group-actions-form';
         }
-        $this->columns[] = [
+        array_unshift($this->columns, [
             'class' => CheckboxColumn::className(),
             'name' => 'group',
             'checkboxOptions' => [
                 'form' => $this->actionsButtonsOptions['formId'],
             ],
-        ];
+        ]);
         parent::init();
     }
 

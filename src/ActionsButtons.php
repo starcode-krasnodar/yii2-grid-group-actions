@@ -106,7 +106,8 @@ class ActionsButtons extends Widget
                     'formaction' => $url,
                     'formmethod' => $widget->formMethod,
                     'name' => 'submit',
-                    'class' => 'btn btn-danger',
+                    'class' => 'btn btn-warning',
+//                    'data-pajax' => '0',
 //                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this items?'),
                 ], $widget->buttonOptions);
                 return Html::submitButton('<span class="glyphicon glyphicon-trash"></span>', $options);
