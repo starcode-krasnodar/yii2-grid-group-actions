@@ -11,12 +11,19 @@ use yii\helpers\Url;
 class ActionsButtons extends Widget
 {
     /**
+     * @var string the ID of the group actions form.
+     */
+    public $formId;
+
+    /**
      * @var string the ID of the controller that should handle the group actions specified here.
      * If not set, it will use the currently active controller. This property is mainly used by
      * [[urlCreator]] to create URLs for different actions. The value of this property will be prefixed
      * to each action name to form the route of the action.
      */
     public $controller;
+
+    public $template = '{form} {buttons}';
 
     /**
      * @var string the template used for composing each cell in the action column.
@@ -27,7 +34,7 @@ class ActionsButtons extends Widget
      *
      * @see groupActionsButtons
      */
-    public $template = '{delete}';
+    public $buttonsTemplate = '{delete}';
 
 
     /**
@@ -84,13 +91,12 @@ class ActionsButtons extends Widget
         if (!isset($this->buttons['delete'])) {
             $this->buttons['delete'] = function ($url) {
                 $options = array_merge([
-                    'title' => Yii::t('yii', 'Delete'),
-                    'aria-label' => Yii::t('yii', 'Delete'),
-                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this items?'),
-                    'data-method' => 'post',
-                    'data-pjax' => '0',
+                    'form' => $this->formId,
+                    'formaction' => $url,
+                    'formmethod' => 'post',
+                    'name' => 'submit',
                 ], $this->buttonOptions);
-                return Html::a('<span class="glyphicon glyphicon-trash text-danger"></span>', $url, $options);
+                return Html::submitInput(Yii::t('yii', 'Delete'), $options);
             };
         }
     }
@@ -118,6 +124,14 @@ class ActionsButtons extends Widget
     public function run()
     {
         parent::run();
+        return strtr($this->template, [
+            '{form}' => $this->renderForm(),
+            '{buttons}' => $this->renderButtons(),
+        ]);
+    }
+
+    public function renderButtons()
+    {
         return preg_replace_callback('/\\{([\w\-\/]+)\\}/', function ($matches) {
             $name = $matches[1];
             if (isset($this->buttons[$name])) {
@@ -127,6 +141,13 @@ class ActionsButtons extends Widget
             } else {
                 return '';
             }
-        }, $this->template);
+        }, $this->buttonsTemplate);
+    }
+
+    public function renderForm()
+    {
+        $form = Html::beginForm('', 'post', ['id' => $this->formId]);
+        $form .= Html::endForm();
+        return $form;
     }
 }

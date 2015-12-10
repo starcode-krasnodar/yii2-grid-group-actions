@@ -22,6 +22,14 @@ class GridView extends \yii\grid\GridView
      */
     public $actionsButtonsOptions = [];
 
+    public function init()
+    {
+        parent::init();
+        if (!isset($this->actionsButtonsOptions['formId'])) {
+            $this->actionsButtonsOptions['formId'] = 'yii2-grid-group-actions-form';
+        }
+    }
+
     /**
      * @inheritdoc
      */
