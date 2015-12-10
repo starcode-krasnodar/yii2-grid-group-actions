@@ -16,6 +16,11 @@ class ActionsButtons extends Widget
     public $formId;
 
     /**
+     * @var string the method of the group action form.
+     */
+    public $formMethod = 'post';
+
+    /**
      * @var string the ID of the controller that should handle the group actions specified here.
      * If not set, it will use the currently active controller. This property is mainly used by
      * [[urlCreator]] to create URLs for different actions. The value of this property will be prefixed
@@ -48,14 +53,20 @@ class ActionsButtons extends Widget
      * }
      * ```
      *
-     * where `$url` is the URL that the column creates for the button.
+     * where `$url` is the URL that the column creates for the button, `$widget` current instance of ActionsButtons widget.
      *
      * You can add further style to the button, for example add CSS class:
      *
      * ```php
      * [
-     *     'delete' => function ($url) {
-     *         return Html::a('Delete', $url, ['class' => 'text-danger']);
+     *     'delete' => function ($url, $widget) {
+     *         $options = array_merge([
+     *             'form' => $widget->formId,
+     *             'formaction' => $url,
+     *             'formmethod' => $widget->formMethod,
+     *             'name' => 'submit',
+     *         ], $widget->buttonOptions);
+     *         return Html::submitInput('Delete', $options);
      *     },
      * ],
      * ```
@@ -89,14 +100,16 @@ class ActionsButtons extends Widget
     protected function initDefaultButtons()
     {
         if (!isset($this->buttons['delete'])) {
-            $this->buttons['delete'] = function ($url) {
+            $this->buttons['delete'] = function ($url, $widget) {
                 $options = array_merge([
-                    'form' => $this->formId,
+                    'form' => $widget->formId,
                     'formaction' => $url,
-                    'formmethod' => 'post',
+                    'formmethod' => $widget->formMethod,
                     'name' => 'submit',
-                ], $this->buttonOptions);
-                return Html::submitInput(Yii::t('yii', 'Delete'), $options);
+                    'class' => 'btn btn-danger',
+//                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this items?'),
+                ], $widget->buttonOptions);
+                return Html::submitButton('<span class="glyphicon glyphicon-trash"></span>', $options);
             };
         }
     }
@@ -137,7 +150,7 @@ class ActionsButtons extends Widget
             if (isset($this->buttons[$name])) {
                 $url = $this->createUrl($name);
 
-                return call_user_func($this->buttons[$name], $url);
+                return call_user_func($this->buttons[$name], $url, $this);
             } else {
                 return '';
             }
@@ -146,7 +159,7 @@ class ActionsButtons extends Widget
 
     public function renderForm()
     {
-        $form = Html::beginForm('', 'post', ['id' => $this->formId]);
+        $form = Html::beginForm('', $this->formMethod, ['id' => $this->formId]);
         $form .= Html::endForm();
         return $form;
     }

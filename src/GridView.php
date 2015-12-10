@@ -2,6 +2,8 @@
 
 namespace starcode\yii\grid;
 
+use yii\grid\CheckboxColumn;
+
 class GridView extends \yii\grid\GridView
 {
     /**
@@ -24,10 +26,17 @@ class GridView extends \yii\grid\GridView
 
     public function init()
     {
-        parent::init();
         if (!isset($this->actionsButtonsOptions['formId'])) {
             $this->actionsButtonsOptions['formId'] = 'yii2-grid-group-actions-form';
         }
+        $this->columns[] = [
+            'class' => CheckboxColumn::className(),
+            'name' => 'group',
+            'checkboxOptions' => [
+                'form' => $this->actionsButtonsOptions['formId'],
+            ],
+        ];
+        parent::init();
     }
 
     /**
