@@ -3,10 +3,9 @@
 namespace starcode\yii\grid;
 
 use Yii;
-use yii\base\InvalidValueException;
-use yii\db\ActiveRecord;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveRecordInterface;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 
 class ActiveGroupActionsController extends Controller
 {
@@ -16,58 +15,30 @@ class ActiveGroupActionsController extends Controller
     public function init()
     {
         parent::init();
+        if (empty($this->modelClass)) {
+            throw new InvalidConfigException(get_class($this) . '::$modelClass must be set.');
+        }
         if (empty($this->groupName)) {
-            throw new InvalidValueException('groupName param is empty,');
-        }
-        if ($this->modelClass == null) {
-            throw new InvalidValueException('modelClass is empty.');
+            throw new InvalidConfigException(get_class($this) . '::$groupName must be set.');
         }
     }
 
-    /**
-     * Default delete action for active record.
-     *
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException
-     * @throws \Exception
-     */
-    public function actionDelete()
+    public function actions()
     {
-        $group = $this->getGroup();
-        foreach ($group as $id) {
-            $model = $this->findModel($id);
-            $model->delete();
-        }
-        return $this->goBack();
+        return [
+            'delete' => [
+                'class' => GroupAction::className(),
+                'modelClass' => $this->modelClass,
+                'groupName' => $this->groupName,
+                'run' => function(ActiveRecordInterface $model) {
+                    $model->delete();
+                },
+                'checkAccess' => [$this, 'checkAccess'],
+            ],
+        ];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getGroup()
+    public function checkAccess($action, $group)
     {
-        $group = Yii::$app->request->getBodyParam($this->groupName, []);
-        if (!is_array($group)) {
-            $group = [];
-        }
-        return $group;
-    }
-
-    /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return ActiveRecord the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        /* @var \yii\db\ActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
-        if (($model = $modelClass::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
     }
 }
